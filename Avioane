@@ -1,0 +1,303 @@
+#include<iostream>
+#include<stdlib.h>
+#include<conio.h>
+using namespace std;
+int tabla_avioane_jucator[10][10], tabla_avioane_PC[10][10], tabla_lovituri_jucator[10][10], tabla_lovituri_PC[10][10], avioane_doborate_PC, avioane_doborate_Jucator, row, coloana, avioane_PC = 0, avioane_Jucator = 0;
+char orientare;
+
+
+void afisare_tabla(int tabla[10][10])
+{
+	cout << "   1 2 3 4 5 6 7 8 9 10"<<endl;
+	cout << "  ---------------------"<<endl;
+	for (int i = 1; i <= 9; i++)
+	{
+		cout << i<<" ";
+		for (int j = 1; j <= 11; j++)
+
+			cout << "| ";
+		cout << endl;
+	}
+	cout << "10"; for (int i = 1; i <= 11; i++) cout << "| ";
+	cout << endl;
+}
+void afisare(int tabla[10][10])
+{
+	int i, j;
+	for (i = 1; i <= 10; i++)
+	{
+		for (j = 1; j <= 10; j++)
+			cout << tabla[i][j];
+		cout << endl;
+	}
+	cout << endl;
+		
+}
+int loc_disponibil(char orientare, int row, int coloana, int tabla[10][10])
+{
+	if (orientare == 'O')
+	{
+		if (coloana + 4 >= 10) return 0;
+		if (row + 1 >= 9 || row - 1 < 0) return 0;
+	}
+	if (orientare == 'V')
+	{
+		if (coloana - 1 < 0 || coloana + 1 >= 10)return 0;
+		if (row + 4 >= 9) return 0;
+	}
+	return 1;
+}
+
+int avion_existent(char orientare, int row, int coloana, int tabla[10][10])
+{
+	if (orientare == 'O')
+	{
+		for (int i = 1; i <= 4; i++)
+			if (tabla[row][i] > 0)
+				return 0;
+		if (tabla[row - 1][coloana + 1] > 0 || tabla[row + 1][coloana + 1])
+			return 0;
+	}
+	if (orientare == 'V')
+	{
+		for (int i = 1; i <= 4; i++)if (tabla[i][coloana] > 0)return 0;
+		if (tabla[row + 1][coloana - 1] > 0 || tabla[row + 1][coloana + 1] > 0)return 0;
+	}
+		return 1;
+	
+}
+
+void validare_input(int tabla[10][10], int* row_p, int* coloana_p, char* orientare_p)
+{
+	row = *row_p;
+	coloana = *coloana_p;
+	orientare = *orientare_p;
+	cout << "Introduceti o orientare (V-vertical sau O-orizontal): ";
+	while (cin >> orientare )
+	{
+		if (orientare == 'O' || orientare == 'V') break;
+		else cout << "Introduceti o orientare (V-vertical sau O-orizontal): ";
+	} 
+	cout << "Introduceti randul: ";
+	
+	while (cin >> row )
+	{
+		if (row >= 1 && row <=10) break;
+		cin >> row;
+	} 
+	cout << "Introduceti coloana: ";
+	
+	while (cin >> coloana )
+	{
+		if (coloana >= 1 && coloana <= 10) break;
+		cin >> coloana;
+	} 
+}
+
+void input_atac(int tabla[10][10])
+{ 
+	cout << "ATAC\n";
+	do
+	{
+		cout << "Introduceti randul: ";
+		cin >> row;
+		if (row > 0 && row <= 10) break;
+	} while (cin >> row);
+	do
+	{
+		cout << "Introduceti coloana: ";
+		cin >> coloana;
+		if (coloana >= 1 && coloana <= 10) break;
+	} while (cin >> coloana);
+}
+		
+void atac(int &rand_atac, int &col_atac)
+{
+	cout << "ATAC\n";
+	do
+	{
+		cout << "Introduceti randul: ";
+		cin >> rand_atac;
+		if (rand_atac > 0 && rand_atac <= 10) break;
+	} while (cin >> rand_atac);
+	do
+	{
+		cout << "Introduceti coloana: ";
+		cin >> col_atac;
+		if (col_atac >= 1 && col_atac <= 10) break;
+	} while (cin >> col_atac);
+}
+void asezare_avioane(int tabla[10][10])
+{
+	bool a = true;
+	for (int i = 1; i <= 10; i++)
+	{
+		for (int j = 1; j <= 10; j++)
+			if (tabla[i][j] != tabla_avioane_PC[i][j])
+				a = false;
+	}
+	//if (tabla == tabla_avioane_PC)
+	if (a==true)
+	{
+		int orientare_nr = rand() % 2;
+		if (orientare_nr == 0)  orientare = 'O';
+		else orientare = 'V';
+		row = 1+(rand() % 10);
+		coloana = 1+(rand() % 10);
+		if (loc_disponibil(orientare, row, coloana, tabla_avioane_PC) == 1 && avion_existent(orientare, row, coloana, tabla_avioane_PC) == 1)
+		{
+			if (orientare == 'O')
+			{
+				tabla_avioane_PC[row][coloana] = 1;
+				tabla_avioane_PC[row][coloana + 1] = 2;
+				tabla_avioane_PC[row - 1][coloana + 1] = 1;
+				tabla_avioane_PC[row + 1][coloana + 1] = 1;
+				tabla_avioane_PC[row][coloana + 2] = 1;
+				tabla_avioane_PC[row][coloana + 3] = 1;
+				avioane_PC++;
+			}
+
+			else if (orientare == 'V')
+			{
+				tabla_avioane_PC[row][coloana] = 1;
+				tabla_avioane_PC[row + 1][coloana] = 2;
+				tabla_avioane_PC[row + 1][coloana - 1] = 1;
+				tabla_avioane_PC[row + 1][coloana + 1] = 1;
+				tabla_avioane_PC[row + 2][coloana] = 1;
+				tabla_avioane_PC[row + 3][coloana] = 1;
+				avioane_PC++;
+			}
+			
+		}
+		
+	}
+	else// if(tabla == tabla_avioane_jucator)
+	{
+		validare_input(tabla, &row,&coloana, &orientare);
+		if (loc_disponibil(orientare, row, coloana, tabla_avioane_jucator) == 1 && avion_existent(orientare, row, coloana, tabla_avioane_jucator) == 1)
+		{
+			
+			if (orientare == 'O')
+			{
+				tabla_avioane_jucator[row][coloana] = 1;
+				tabla_avioane_jucator[row][coloana + 1] = 2;
+				tabla_avioane_jucator[row - 1][coloana + 1] = 1;
+				tabla_avioane_jucator[row + 1][coloana + 1] = 1;
+				tabla_avioane_jucator[row][coloana + 2] = 1;
+				tabla_avioane_jucator[row][coloana + 3] = 1;
+				avioane_Jucator++;
+			}
+			else if (orientare == 'V')
+			{
+				tabla_avioane_jucator[row][coloana] = 1;
+				tabla_avioane_jucator[row + 1][coloana] = 2;
+				tabla_avioane_jucator[row + 1][coloana - 1] = 1;
+				tabla_avioane_jucator[row + 1][coloana + 1] = 1;
+				tabla_avioane_jucator[row + 2][coloana] = 1;
+				tabla_avioane_jucator[row + 3][coloana] = 1;
+				avioane_Jucator++;
+			}
+			
+		}
+		afisare(tabla_avioane_jucator);
+		cout<<endl<< avioane_Jucator<<endl;
+	}
+
+}
+
+void schimbare_tura(int tabla[10][10])
+{
+	bool a=true;
+	for (int i = 1; i <= 10; i++)
+	{
+		for (int j = 1; j <= 10; j++)
+			if (tabla[i][j] != tabla_lovituri_jucator[i][j])
+				a = false;
+	}
+	if (a == false)
+	{
+		atac(row, coloana);
+		if (tabla[row][coloana] == 1) {
+			cout << endl << "Avionul lovit a suferit daune";
+		}
+		else if (tabla[row][coloana] == 2)
+		{
+			cout << "Avion doborat";
+			avioane_doborate_PC++;
+		}
+		else cout << endl << "Nu exista niciun avion in acea locatie\n";
+		schimbare_tura(tabla);
+	}
+	/*if (tabla == tabla_lovituri_jucator)
+	{
+		input_atac(tabla);
+		if (tabla[row][coloana] == 1) {
+			cout <<endl<< "Avionul lovit a suferit daune";
+		}
+		else if (tabla[row][coloana] == 2)
+		{
+			cout << "Avion doborat";
+			avioane_doborate_PC ++;
+		}
+		else cout <<endl<< "Nu exista niciun avion in acea locatie\n";
+		schimbare_tura(tabla);
+	}*/
+
+	//else if (tabla == tabla_lovituri_PC)
+	else 
+	{
+		row = 1 + (rand() % 10);
+		coloana = 1 + (rand() % 10);
+		if (tabla[row][coloana] == 1)cout << "Un avion aliat a suferit daune";
+		else if (tabla[row][coloana] == 2) {
+			cout << "Un avion aliat a fost doborat";
+			avioane_doborate_Jucator ++;
+		}
+		else cout << "Inamicul a ratat";
+	}
+
+}
+
+int main()
+{
+	cout <<"Bine ati venit"<<endl;
+	afisare_tabla(tabla_avioane_jucator);
+	while (avioane_Jucator < 3)
+	{
+		asezare_avioane(tabla_avioane_jucator);
+		//cout << " " << avioane_Jucator << " ";
+	}
+	/*while (avioane_PC < 3)
+	{
+		asezare_avioane(tabla_avioane_PC);
+		afisare(tabla_avioane_PC);
+	}*/
+	while (1)
+	{
+		while (1)
+		{
+			cout << endl << "Runda jucatorului"<<endl;
+			afisare_tabla(tabla_lovituri_jucator);
+			schimbare_tura(tabla_lovituri_jucator);
+			break;
+		}
+		if (avioane_doborate_Jucator == 3)
+		{
+			cout << endl << "Ati castigat, ati doborat toate avioanele"<<endl;
+			break;
+		}
+		while (1)
+		{
+			cout << endl << "Runda inamic"<<endl;
+			schimbare_tura(tabla_lovituri_PC);
+			break;
+		}
+		cout << endl;
+		afisare_tabla(tabla_lovituri_PC);
+		if(avioane_doborate_PC==3)
+		{
+			cout << endl << "Ati pierdut, inamicul v-a doborat toate avioanele"<<endl;
+			break;
+		}
+	}
+}
